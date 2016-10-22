@@ -29,34 +29,45 @@ class NegociacaoController {
         //dessa forma ele converte corretamente;
         //console.log(trataData(this._inputData.value));
 
-        let novaData = trataData(this._inputData.value);
-        console.log(new Date(novaData));
+       // let novaData = trataData(this._inputData.value);
+        //console.log(new Date(novaData));
         //console.log(negociacao);
 
         //Para passar os parametros no construtor 
         //do método dinamicamento com ... cada ponto representa um parametro que será criado no split
-          console.log(new Date(...
-                this._inputData.value
-                .split('-')
-                //percorre o array e devolve o item, e pega a posição (indice) que estou passando
-                .map(function(item,indice){
-                    return item - indice % 2
-                })
-            ));
+        //  let data = new Date(...
+        //         this._inputData.value
+        //         .split('-')
+        //         //percorre o array e devolve o item, e pega a posição (indice) que estou passando
+        //         .map((item,indice) => item - indice % 2)
+        //     );
+         
+         
+
+         let negociacao = new Negociacao(
+                DateHelper.textoParaData(this._inputData.value),
+                this._inputQuantidade.value,
+                this._inputValor.value
+         );
+
+         console.log(negociacao);
+         console.log(DateHelper.dataParaTexto(negociacao.data))
+         //let diaMesAno = negociacao.data.getDate() + "/" + (negociacao.data.getMonth() + 1) + "/" + negociacao.data.getFullYear();
+         //console.log(diaMesAno);
     };
 
    
     
 };
 
-function trataData(data){
+// function trataData(data){
 
-        var dataAlt = [data.split('-')];
-        if(dataAlt[1] == 1){
-            dataAlt[1] = 0;
-        }else{
-            dataAlt[1] = dataAlt[1] - 1;
-        };
-            data = dataAlt;
-    return dataAlt;
-};
+//         var dataAlt = [data.split('-')];
+//         if(dataAlt[1] == 1){
+//             dataAlt[1] = 0;
+//         }else{
+//             dataAlt[1] = dataAlt[1] - 1;
+//         };
+//             data = dataAlt;
+//     return dataAlt;
+// };
