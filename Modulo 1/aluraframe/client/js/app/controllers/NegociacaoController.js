@@ -3,17 +3,54 @@ class NegociacaoController {
         constructor(){
         
         let $ = document.querySelector.bind(document);
-        
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
+        this._listaNegociacoes = new ListaNegociacoes();
             
         };
 
     adiciona(event){
-        event.preventDefault();
 
-        //Esta dando erro por que meu model recebe data 
+         event.preventDefault();
+         this._listaNegociacoes.adiciona(this._criaNegociacao());
+         this._limpaFormulario();
+
+    };
+
+    _criaNegociacao(){
+
+        return new Negociacao(
+                DateHelper.textoParaData(this._inputData.value),
+                this._inputQuantidade.value,
+                this._inputValor.value
+        );
+    }
+
+    //O método começa com o _ para indicar que é um étodo privado, pois não faz sentido ele ser chamado externamente,
+    //Pois ele será usado dentro do método adiciona.
+    _limpaFormulario(){
+        this._inputData.value = "";
+        this._inputQuantidade.value = "1";
+        this._inputValor.value = 0.0;
+
+        this._inputData.focus(); // Para dar o foco no campo
+    }
+};
+
+// function trataData(data){
+
+//         var dataAlt = [data.split('-')];
+//         if(dataAlt[1] == 1){
+//             dataAlt[1] = 0;
+//         }else{
+//             dataAlt[1] = dataAlt[1] - 1;
+//         };
+//             data = dataAlt;
+//     return dataAlt;
+// };
+
+//Esta dando erro por que meu model recebe data 
         //e a controller esta passando string, não reconhece o método getTime()
         //console.log(typeof(this._inputData.value));
         // let negociacao = new Negociacao(
@@ -42,32 +79,5 @@ class NegociacaoController {
         //         .map((item,indice) => item - indice % 2)
         //     );
          
-         
-
-         let negociacao = new Negociacao(
-                DateHelper.textoParaData(this._inputData.value),
-                this._inputQuantidade.value,
-                this._inputValor.value
-         );
-
-         console.log(negociacao);
-         console.log(DateHelper.dataParaTexto(negociacao.data))
-         //let diaMesAno = negociacao.data.getDate() + "/" + (negociacao.data.getMonth() + 1) + "/" + negociacao.data.getFullYear();
-         //console.log(diaMesAno);
-    };
-
-   
-    
-};
-
-// function trataData(data){
-
-//         var dataAlt = [data.split('-')];
-//         if(dataAlt[1] == 1){
-//             dataAlt[1] = 0;
-//         }else{
-//             dataAlt[1] = dataAlt[1] - 1;
-//         };
-//             data = dataAlt;
-//     return dataAlt;
-// };
+    //let diaMesAno = negociacao.data.getDate() + "/" + (negociacao.data.getMonth() + 1) + "/" + negociacao.data.getFullYear();
+    //console.log(diaMesAno);
