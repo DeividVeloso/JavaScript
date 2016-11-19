@@ -1,46 +1,74 @@
 class NegociacaoController {
 
-        constructor(){
-        
+    constructor() {
+
         let $ = document.querySelector.bind(document);
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
-        this._listaNegociacoes = new ListaNegociacoes();
+        // this._listaNegociacoes = new ListaNegociacoes(function(model){
+        //Essa função é chamada no adiciona e esvazia metodos da classe ListaNegociacao
+        //Nesse escopo da função esse this que retorna é do método que executou a função,
+        //ou seja é o this.armadilha(this) que no caso vem do contexto da ListaNegociacao
+        //Por isso o erro Cannot read property 'update' of undefined(…)
+        //Porque a ListaNegociacao não tem o a instancia do metodo update e sim a NegociacaoController
+        //     this._negociacoesView.update(model);
+        // });
+
+        //Para revolver esse problema, vamos usar o this dinamico a nosso favor
+        //Primeiro vamos passar  o this como parametro, esse this é o da minha classe NegociacaoController
+        //Na ListaNegociacoes constructor vou receber esse this como contexto
+        // this._listaNegociacoes = new ListaNegociacoes(function (this, model) {
+        //     this._negociacoesView.update(model);
+        // });
+
+        //RESOLVENDO SEM O CONTEXTO E COM ARROW function
+        //Arrow function não é só um modo de encurtar a forma de escrita 
+        //Ela não tem scopo dinamico ela é lexico o escopo não muda
+        //Por isso o this dessa função é do NegociacaoController e não de quem chama.
+        this._listaNegociacoes = new ListaNegociacoes(model => this._negociacoesView.update(model));
 
         this._negociacoesView = new NegociacoesView($('#negociacoesView'))
         this._negociacoesView.update(this._listaNegociacoes);
 
-        this._mensagem = new Mensagem(); 
+        this._mensagem = new Mensagem();
         this._mensagemView = new MensagemView($('#mensagemView'));
         this._mensagemView.update(this._mensagem.texto);
-        };
+    };
 
-    adiciona(event){
+    adiciona(event) {
 
-         event.preventDefault();
-         this._listaNegociacoes.adiciona(this._criaNegociacao());
-         this._negociacoesView.update(this._listaNegociacoes);
+        event.preventDefault();
+        this._listaNegociacoes.adiciona(this._criaNegociacao());
+        // this._negociacoesView.update(this._listaNegociacoes);
 
-         this._mensagem.texto = 'Negociação adicionada com sucesso';
-         this._mensagemView.update(this._mensagem);
+        this._mensagem.texto = 'Negociação adicionada com sucesso';
+        this._mensagemView.update(this._mensagem);
 
-         this._limpaFormulario();
+        this._limpaFormulario();
 
     };
 
-    _criaNegociacao(){
+    apaga() {
+        this._listaNegociacoes.esvazia();
+        // this._negociacoesView.update(this._listaNegociacoes);
+
+        this._mensagem.texto = 'Negociacao apagada com sucesso.'
+        this._mensagemView.update(this._mensagem);
+    }
+
+    _criaNegociacao() {
 
         return new Negociacao(
-                DateHelper.textoParaData(this._inputData.value),
-                this._inputQuantidade.value,
-                this._inputValor.value
+            DateHelper.textoParaData(this._inputData.value),
+            this._inputQuantidade.value,
+            this._inputValor.value
         );
     }
 
     //O método começa com o _ para indicar que é um étodo privado, pois não faz sentido ele ser chamado externamente,
     //Pois ele será usado dentro do método adiciona.
-    _limpaFormulario(){
+    _limpaFormulario() {
         this._inputData.value = "";
         this._inputQuantidade.value = "1";
         this._inputValor.value = 0.0;
@@ -89,6 +117,6 @@ class NegociacaoController {
         //         //percorre o array e devolve o item, e pega a posição (indice) que estou passando
         //         .map((item,indice) => item - indice % 2)
         //     );
-         
+
     //let diaMesAno = negociacao.data.getDate() + "/" + (negociacao.data.getMonth() + 1) + "/" + negociacao.data.getFullYear();
     //console.log(diaMesAno);
