@@ -66,7 +66,7 @@ class NegociacaoController {
         );
     }
 
-    //O método começa com o _ para indicar que é um étodo privado, pois não faz sentido ele ser chamado externamente,
+    //O método começa com o _ para indicar que é um método privado, pois não faz sentido ele ser chamado externamente,
     //Pois ele será usado dentro do método adiciona.
     _limpaFormulario() {
         this._inputData.value = "";
