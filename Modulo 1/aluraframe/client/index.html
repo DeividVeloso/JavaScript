@@ -57,5 +57,48 @@
     <script>
         let negociacaoController = new NegociacaoController();
     </script>
+    
+    <script>
+        //Criando um proxy, intermediario para acessar a model Negociacao, dessa forma todas as propriedades são espelhadas da proxy
+        //Instancio um modelo Negociacao com os parametros, passando um handle de get, onde vai me avisar toda vem que acessarem 
+        //minhas propriedades Negociacao.
+        let negociacao = new Proxy(new Negociacao(new Date(), 1, 100),{
+            
+            //target é a referencia original que está sendo encapsulada(Negociacao)
+            //prop a propriedade que está sendo acessada
+            //value o valor da propriedade que esta sendo setada
+            //receiver - a referencia do proprio Proxy
+            set: function(target,prop, value, receiver){
+            
+            console.log(`valor anterior: ${target[prop]}, novo valor ${value}`)
+            return Reflect.set(target, prop, value, receiver);
+            }
+    });
+
+    negociacao._quantidade = 10;
+    negociacao._valor = 100;
+
+    </script>
+<!--Handle set
+    <script>
+        //Criando um proxy, intermediario para acessar a model Negociacao, dessa forma todas as propriedades são espelhadas da proxy
+        //Instancio um modelo Negociacao com os parametros, passando um handle de get, onde vai me avisar toda vem que acessarem 
+        //minhas propriedades Negociacao.
+        let negociacao = new Proxy(new Negociacao(new Date(), 1, 100),{
+            
+            //target é a referencia original que está sendo encapsulada(Negociacao)
+            //prop a propriedade que está sendo acessada
+            //receiver - a referencia do proprio Proxy
+            get: function(target,prop, receiver){
+            
+            console.log(`a propriedade ${prop} foi incerceptada`)
+            return Reflect.get(target, prop, receiver);
+            }
+    });
+
+    console.log(negociacao.quantidade);
+    console.log(negociacao.valor);
+
+    </script>-->
 </body>
 </html>
