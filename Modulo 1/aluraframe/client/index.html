@@ -57,7 +57,52 @@
     <script>
         let negociacaoController = new NegociacaoController();
     </script>
-    
-    
+
+    <!--<script>
+        let funcionario = {email: 'abc@abc.com'};
+
+        let funcionarioProxy = new Proxy(funcionario, {
+          set: function(target, prop, value, receiver){
+                 console.log(`antigo valor ${target[prop]} novo valor ${value}`);
+                 console.log(receiver);
+                 return `**${Reflect.get(target, prop, value, receiver)}**`;
+            }
+            
+        })
+        funcionarioProxy.email = 'novovalor@gmail.com'
+        console.log(funcionarioProxy.email);
+
+    </script>-->
+    <!--<script>
+
+    class Funcionario {
+
+            constructor(email) {
+                this._email = email;
+            }
+
+            get email() {
+                return this._email;
+            }
+
+            set email(email) {
+                this._email = email;
+            }
+        }
+
+      
+        let funcionarioProxy = new Proxy(new Funcionario('antes@gmail.com'), {
+          set: function(target, prop, value, reciver){
+                console.log(prop);
+                 console.log(`Antigo valor ${target[prop]} novo valor ${value}`);
+                
+                 return Reflect.get(target, prop,value, reciver);
+            }
+        })
+
+        funcionarioProxy.email = 'novo@gmail.com'
+
+    </script>-->
+
 </body>
 </html>
