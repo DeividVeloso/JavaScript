@@ -5,21 +5,33 @@ class NegociacaoController {
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
-     
+
        this._negociacoesView = new NegociacoesView($('#negociacoesView'))
        this._listaNegociacoes = new Bind(
             new ListaNegociacoes(), //Meu modelo
             this._negociacoesView, //Minha view
              ['adiciona','esvazia'] // Executa a associação quando? Quando  ['adiciona','esvazia'] forem chamados
        );
-       
+
         this._mensagemView = new MensagemView($('#mensagemView'));
         this._mensagem = new Bind(
              new Mensagem(),
              this._mensagemView,
             ['texto']
         );
-        
+
+    };
+
+    importaNegociacoes(){
+
+      //Fazendo uma chamada Ajax assincrona
+      let xhr = new XMLHttpRequest();
+
+      //Abrindo  um endereço
+      //Passar Verbo
+      //Passar o EndPoint
+      xhr.open('GET', 'negociacoes/semana');
+
     };
 
     adiciona(event) {
