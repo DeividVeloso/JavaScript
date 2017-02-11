@@ -23,32 +23,18 @@ class NegociacaoController {
     };
 
     importaNegociacoes(){
-debugger
-      //Fazendo uma chamada Ajax assincrona
-      let xhr = new XMLHttpRequest();
 
-      //Abrindo  um endereço
-      //Passar Verbo
-      //Passar o EndPoint
-      //Só não estou passando URL http://servidor.com porque o servico e o site estão no mesmo servidor
-      xhr.open('GET', 'negociacoes/semana');
+        let serviceNegociacao = new NegociacaoService();
+        serviceNegociacao.obterNegociacoesDaSemana((err, negociacoes) => {
+          if(err){
+              this._mensagem.texto = err;
+              return;
+          }
 
-      xhr.onreadystatechange = () => {
-            //Se o estado for igual a 4 - a requisição foi concluida e tem uma resposta
-            //Porém eu não posso confiar só nesse estado, pois as vezes o servidor respondeu erro e mesmo assim é uma requisição válida
-            if (xhr.readyState == 4) {
-                //Só posso confiar se o status for 200 Http - OK
-                if(xhr.status == 200){
-                     console.log("Status 200 OK, servidor retornou");
-                     console.log(xhr.responseText);
-                }else{
-                    console.log("Não foi possivel obter as negociacoes");
-                }
-            } else {
-               
-            }
-          };
-          xhr.send();
+          negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
+          this._mensagem.texto = 'Negociações importadas com sucesso';
+        }
+      );
     };
 
     adiciona(event) {
