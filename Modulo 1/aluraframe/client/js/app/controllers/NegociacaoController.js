@@ -25,16 +25,30 @@ class NegociacaoController {
     importaNegociacoes(){
 
         let serviceNegociacao = new NegociacaoService();
-        serviceNegociacao.obterNegociacoesDaSemana((err, negociacoes) => {
-          if(err){
-              this._mensagem.texto = err;
-              return;
-          }
+        //Aplicando o padrão Promise ao invés do Call Back
+        let promise = serviceNegociacao.obterNegociacoesDaSemana();
+        promise
+        //Se minha promessa for cumprida
+        .then(negociacoes => {
+                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
+                    this._mensagem.texto = "Negociações obtidas com sucesso!"
+        })
+        //Se não for cumprida
+        .catch(erro => this._mensagem.texto = erro)
 
-          negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao));
-          this._mensagem.texto = 'Negociações importadas com sucesso';
-        }
-      );
+        serviceNegociacao.obterNegociacoesDaSemanaAnterior()
+         .then(negociacoes => {
+                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
+                    this._mensagem.texto = "Negociações obtidas com sucesso!"
+        })
+        .catch(erro => this._mensagem.texto = erro)
+
+         serviceNegociacao.obterNegociacoesDaSemanaRetrasada()
+         .then(negociacoes => {
+                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
+                    this._mensagem.texto = "Negociações obtidas com sucesso!"
+        })
+        .catch(erro => this._mensagem.texto = erro)
     };
 
     adiciona(event) {
