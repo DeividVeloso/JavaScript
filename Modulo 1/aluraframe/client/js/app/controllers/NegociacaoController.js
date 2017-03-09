@@ -25,6 +25,21 @@ class NegociacaoController {
     importaNegociacoes(){
 
         let serviceNegociacao = new NegociacaoService();
+
+        Promise.all([
+            serviceNegociacao.obterNegociacoesDaSemana(),
+            serviceNegociacao.obterNegociacoesDaSemanaAnterior(),
+            serviceNegociacao.obterNegociacoesDaSemanaRetrasada()
+        ])
+        .then(negociacoes => { 
+           negociacoes
+                .reduce((arrayAchatado, array) => arrayAchatado.concat(array),[])
+                .forEach(itemResultadoArray => this._listaNegociacoes.adiciona(itemResultadoArray));
+            this._mensagem.texto = "Negociações obtidas com sucesso!"
+        })
+        .catch(error => this._mensagem.texto = error);
+
+        /*
         //Aplicando o padrão Promise ao invés do Call Back
         let promise = serviceNegociacao.obterNegociacoesDaSemana();
         promise
@@ -49,7 +64,9 @@ class NegociacaoController {
                     this._mensagem.texto = "Negociações obtidas com sucesso!"
         })
         .catch(erro => this._mensagem.texto = erro)
+        */
     };
+
 
     adiciona(event) {
         event.preventDefault();

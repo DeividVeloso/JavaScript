@@ -1,75 +1,56 @@
 class NegociacaoService{
 
+    constructor(){
+        //Como a classe NegociacaoService agora depende de HttpService
+        //é uma boa declarar essa dependência no construtor da classe
+        this._http = new HttpService();
+    }
+
+
   obterNegociacoesDaSemana(){
         return new Promise((resolve, reject) => {
-                //Fazendo uma chamada Ajax assincrona
-                let xhr = new XMLHttpRequest();
-
-                //Abrindo  um endereço
-                //Passar Verbo
-                //Passar o EndPoint
-                //Só não estou passando URL http://servidor.com porque o servico e o site estão no mesmo servidor
-                xhr.open('GET', 'negociacoes/semana');
-
-                xhr.onreadystatechange = () => {
-                        //Se o estado for igual a 4 - a requisição foi concluida e tem uma resposta
-                        //Porém eu não posso confiar só nesse estado, pois as vezes o servidor respondeu erro e mesmo assim é uma requisição válida
-                        if (xhr.readyState == 4) {
-                            //Só posso confiar se o status for 200 Http - OK
-                            if(xhr.status == 200){
-                                //adicionando a lista de negociacoes no callback
-                                //error, ListaNegociacoes
-                                resolve(JSON.parse(xhr.responseText)
-                                .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)));
-                            }else{
-                                console.log(xhr.responseText);
-                                reject('Não foi possivel negociacoes, callback');
-                            }
-                        }
-                    };
-                    xhr.send();
-        });
+            this._http.get('negociacoes/semana')
+            .then(negociacoes => {
+                //Vem uma lista do tipo object, estou transformando para o tipo new Negociacao
+                //Como vai me retornar uma nova lista, tenho que passar para o resolver para ser consumido no NegociacaoController
+                resolve(negociacoes
+                    .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)))
+            })
+            .catch(erro => {
+                    //Logar mensagem de baixo nivel
+                    console.log(erro);
+                    reject('Não foi possível obter as negociações da semana')
+                    })
+            });
   }
 
       
 
     obterNegociacoesDaSemanaAnterior(){
           return new Promise((resolve, reject) => {
-             let xhr = new XMLHttpRequest();
-                xhr.open('GET', 'negociacoes/anterior');
-
-                xhr.onreadystatechange = () => {
-                        if (xhr.readyState == 4) {
-                            if(xhr.status == 200){
-                               resolve(JSON.parse(xhr.responseText)
-                                .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)));
-                            }else{
-                                console.log(xhr.responseText);
-                               reject('Não foi possivel negociacoes, callback');
-                            }
-                        }
-                    };
-                    xhr.send();
-        });
+            this._http.get('negociacoes/anterior')
+            .then(negociacoes => {
+                resolve(negociacoes
+                    .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)))
+            })
+            .catch(erro => {
+                 console.log(erro);
+                 reject('Não foi possível obter as negociações da semana')
+                    })
+            });
     }
     
     obterNegociacoesDaSemanaRetrasada(){
-          return new Promise((resolve, reject) => {
-                let xhr = new XMLHttpRequest();
-                xhr.open('GET', 'negociacoes/retrasada');
-
-                xhr.onreadystatechange = () => {
-                        if (xhr.readyState == 4) {
-                            if(xhr.status == 200){
-                               resolve(JSON.parse(xhr.responseText)
-                                .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)));
-                            }else{
-                                console.log(xhr.responseText);
-                                reject('Não foi possivel negociacoes, callback');
-                            }
-                        }
-                    };
-                    xhr.send();
-                });
-            }
+            return new Promise((resolve, reject) => {
+            this._http.get('negociacoes/retrasada')
+            .then(negociacoes => {
+                resolve(negociacoes
+                    .map(objeto => new Negociacao(new Date(objeto.data), objeto.quantidade, objeto.valor)))
+            })
+            .catch(erro => {
+                 console.log(erro);
+                 reject('Não foi possível obter as negociações da semana')
+                    })
+            });
+    }
 }
