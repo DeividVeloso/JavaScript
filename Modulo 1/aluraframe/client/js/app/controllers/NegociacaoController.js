@@ -5,12 +5,13 @@ class NegociacaoController {
         this._inputData = $('#data');
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
+        this._ordemAtual = '';
 
        this._negociacoesView = new NegociacoesView($('#negociacoesView'))
        this._listaNegociacoes = new Bind(
             new ListaNegociacoes(), //Meu modelo
             this._negociacoesView, //Minha view
-             ['adiciona','esvazia'] // Executa a associação quando? Quando  ['adiciona','esvazia'] forem chamados
+             ['adiciona','esvazia','ordena','inverteOrdem'] // Executa a associação quando? Quando  ['adiciona','esvazia'] forem chamados
        );
 
         this._mensagemView = new MensagemView($('#mensagemView'));
@@ -21,6 +22,16 @@ class NegociacaoController {
         );
 
     };
+
+    ordena(coluna){
+       if(this._ordemAtual == coluna) {
+            // inverte a ordem da lista!
+            this._listaNegociacoes.inverteOrdem();
+        } else {
+            this._listaNegociacoes.ordena((a, b) => a[coluna] - b[coluna]);
+        }
+        this._ordemAtual = coluna;
+    }
 
     importaNegociacoes(){
 
@@ -33,33 +44,6 @@ class NegociacaoController {
             this._mensagem.texto = "Negociações obtidas com sucesso!"
         })
         .catch(error => this._mensagem.texto = error);
-
-        /*
-        //Aplicando o padrão Promise ao invés do Call Back
-        let promise = serviceNegociacao.obterNegociacoesDaSemana();
-        promise
-        //Se minha promessa for cumprida
-        .then(negociacoes => {
-                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
-                    this._mensagem.texto = "Negociações obtidas com sucesso!"
-        })
-        //Se não for cumprida
-        .catch(erro => this._mensagem.texto = erro)
-
-        serviceNegociacao.obterNegociacoesDaSemanaAnterior()
-         .then(negociacoes => {
-                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
-                    this._mensagem.texto = "Negociações obtidas com sucesso!"
-        })
-        .catch(erro => this._mensagem.texto = erro)
-
-         serviceNegociacao.obterNegociacoesDaSemanaRetrasada()
-         .then(negociacoes => {
-                    negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao))
-                    this._mensagem.texto = "Negociações obtidas com sucesso!"
-        })
-        .catch(erro => this._mensagem.texto = erro)
-        */
     };
 
 
