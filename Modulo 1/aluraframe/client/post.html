@@ -49,9 +49,11 @@
                     quantidade.value = 1;
                     valor.value = 0.0;
                     data.focus();
-                    alert('Negociação enviada com sucesso');
+                    console.log('Negociação enviada com sucesso');
                 })
-                .catch(erro => alert(`Não foi possível enviar a negociação: ${erro}`));
+                .catch(erro => {
+                    console.log(`Não foi possível enviar a negociação: ${erro}`)
+                });
       
           }
     </script>

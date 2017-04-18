@@ -34,7 +34,6 @@ class HttpService {
 
              let xhr = new XMLHttpRequest();
              xhr.open("POST", url, true);
-                        console.log(xhr);
              
              xhr.setRequestHeader("Content-type", "application/json");
              xhr.onreadystatechange = () => {
