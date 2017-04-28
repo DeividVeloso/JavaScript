@@ -18,7 +18,12 @@
         openRequest.onupgradeneeded = e => {
             console.log('Cria ou altera um banco já existente');
             let minhaConnection = e.target.result;
-            minhaConnection.createObjectStore('negociacoes');
+
+            if(minhaConnection.objectStoreNames.contains('negociacoes')){
+                minhaConnection.deleteObjectStore('negociacoes');
+            }
+            //Habilitando o Auto Incremento do Objeto
+            minhaConnection.createObjectStore('negociacoes', {autoIncrement : true});
         };
         
         openRequest.onsuccess = e => {
@@ -43,7 +48,7 @@
             //Pegando a minha Store de Negociacoes
             let store = transaction.objectStore("negociacoes");
 
-            let negociacao = new Negociacao(new Date(), 1, 100)
+            let negociacao = new Negociacao(new Date(), 1, 100);
             
             //fazendo uma requisição de insert na store e verificando o resultado de sucesso ou falha
             let request = store.add(negociacao);
@@ -59,6 +64,36 @@
             }
         }
 
+        function listarTodos(){
+
+            let transaction = connection.transaction(['negociacoes'], 'readonly');
+            let store = transaction.objectStore('negociacoes');
+
+            let negociacoes = [];
+
+            //Vamos abrir um cursor para percorrer o resultado
+            let cursor = store.openCursor();
+
+            cursor.onsuccess = e =>{
+                let atual = e.target.result;
+
+                //Verifica se ainda tem dados para serem lidos, senão não entra no negociacoes.push()
+                if(atual){
+
+                    negociacoes.push(new Negociacao(atual.value._data, atual.value._quantidade, atual.value._valor));
+                    //COMO SE FOSSE O I++; para percorrer todas as linhas do array
+                    atual.continue();
+                }else{
+                    //Quando acaba de colocar dados no Array
+                    console.log(negociacoes);
+                }
+
+            }
+            
+            cursor.onerror = e =>{
+                console.log("Error", e.target.error.result);
+            }
+        }
 
     </script>
 </body>
