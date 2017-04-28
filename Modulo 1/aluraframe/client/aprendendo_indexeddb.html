@@ -7,19 +7,24 @@
     <title>Document</title>
 </head>
 <body>
+     
+    <script src="js/app/models/Negociacao.js"></script>
     <script>
         var connection;
 
         //Primeiro parâmetro é o nome do banco que quero abrir.
-        var openRequest = window.indexedDB.open('aluraframe',1);
+        var openRequest = window.indexedDB.open('aluraframe',2);
         
         openRequest.onupgradeneeded = e => {
             console.log('Cria ou altera um banco já existente');
+            let minhaConnection = e.target.result;
+            minhaConnection.createObjectStore('negociacoes');
         };
         
         openRequest.onsuccess = e => {
             
             //Pegando a conexão com o Banco de dados AluraFrame
+            console.log('Conexão Obtida com sucesso!');
             connection = e.target.result;
 
         };
@@ -28,6 +33,31 @@
         openRequest.onerror = e => {
             console.log(e.target.error);
         };
+
+        function adiciona(){
+            //Abrindo uma transação com o banco para executar meus comando DML, DDL
+            //Tabela que vou acessar 
+            //Função de Leitura ou Escrita
+            let transaction = connection.transaction(['negociacoes'],'readwrite')
+
+            //Pegando a minha Store de Negociacoes
+            let store = transaction.objectStore("negociacoes");
+
+            let negociacao = new Negociacao(new Date(), 1, 100)
+            
+            //fazendo uma requisição de insert na store e verificando o resultado de sucesso ou falha
+            let request = store.add(negociacao);
+
+            //Tratando o retorno da request
+
+            request.onerror = e => {
+                console.log("Erro ao inserir", e);
+            }
+
+            request.onsuccess = e => {
+                console.log("Inserido com sucesso", e);
+            }
+        }
 
 
     </script>
