@@ -3,7 +3,9 @@ var ConnectionFactory = (function (){
     var dbName = "aluraframe";
     var dbVersion = 4;
     var stores = ["negociacoes"];
+    
     var connection = null;
+    var close = null;
     return class ConnectionFactory {
       //para evitar que o programador tente instanciar esssa classe, pois ela é static
       constructor() {
@@ -20,7 +22,13 @@ var ConnectionFactory = (function (){
           };
 
           openRequest.onsuccess = e => {
-            if(!connection) connection = e.target.result;
+            if(!connection) {
+              connection = e.target.result;
+              close = connection.close.bind(connection);
+              connection.close = function(){
+                  throw new Error('Você não pode fechar diretamente a conexão')
+              }
+            }
               resolve(connection)
           };
 
@@ -40,6 +48,14 @@ var ConnectionFactory = (function (){
             connection.createObjectStore(store, { autoIncrement: true });
           }
         });
+      }
+
+      //Método para fechar a conexão
+      static closeConnection(){
+        if(connection){
+          close();
+          connection = null;
+        }
       }
     }
 })()
