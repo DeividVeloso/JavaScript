@@ -28,12 +28,11 @@ class NegociacaoDao {
 
     listaTodos() {
         return new Promise((resolve,reject) => {
-            //Pega a conexão com o IndexDB e pede permissão de escrita e leitura nessa tabela
-            let transaction = this_connection.transaction(['negociacoes'], 'readwrite');
-            //Pega tabela(StoreObject) negociacoes
-            let store = transaction.objectStore('negociacoes');
-            //Abre o cursor na store 
-            let cursor = store.openCursor();
+            
+            let cursor = this._connection
+                        .transaction([this._store], 'readwrite') //Pega a conexão com o IndexDB e pede permissão de escrita e leitura nessa tabela
+                        .objectStore(this._store) //Pega tabela(StoreObject) negociacoes
+                        .openCursor();//Abre o cursor na store 
 
             let negociacoes = [];
 
@@ -53,8 +52,28 @@ class NegociacaoDao {
             }
 
             cursor.onerror = e =>{
-                reject(e);
+                console.log(e.target.error);
+                reject('Não foi possível listar as negociações');
             }
         });
     }
+
+    apagaTodos(){
+        return new Promise((resolve, reject) => {
+            //Me devolve uma requisição
+            let request = this._connection
+                .transaction([this._store], 'readwrite')
+                .objectStore(this._store)
+                .clear(); //Apaga a minha obejectStore
+            
+            request.onsuccess = e => {
+                resolve('Dados apagados com sucesso');
+            }
+            request.onerror = e => {
+                console.log(e.target.error);
+                reject('Não foi possível apagar os dados')
+            }
+        });
+    }
+    
 }

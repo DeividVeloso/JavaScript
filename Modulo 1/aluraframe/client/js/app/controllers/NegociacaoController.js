@@ -7,24 +7,35 @@ class NegociacaoController {
         this._inputValor = $('#valor');
         this._ordemAtual = '';
 
-       this._negociacoesView = new NegociacoesView($('#negociacoesView'))
-       this._listaNegociacoes = new Bind(
+        this._negociacoesView = new NegociacoesView($('#negociacoesView'))
+        this._listaNegociacoes = new Bind(
             new ListaNegociacoes(), //Meu modelo
             this._negociacoesView, //Minha view
-             ['adiciona','esvazia','ordena','inverteOrdem'] // Executa a associação quando? Quando  ['adiciona','esvazia'] forem chamados
-       );
+            ['adiciona', 'esvazia', 'ordena', 'inverteOrdem'] // Executa a associação quando? Quando  ['adiciona','esvazia'] forem chamados
+        );
 
         this._mensagemView = new MensagemView($('#mensagemView'));
         this._mensagem = new Bind(
-             new Mensagem(),
-             this._mensagemView,
+            new Mensagem(),
+            this._mensagemView,
             ['texto']
         );
 
+        //Primeiro preciso da minha conexão com o Banco IndexDB
+        ConnectionFactory
+            .getConnection()
+            .then(connection => new NegociacaoDao(connection))
+            .then(dao => dao.listaTodos())
+            .then(negociacoes =>
+                negociacoes.forEach(negociacao => this._listaNegociacoes.adiciona(negociacao)))
+            .catch(erro => {
+                console.log(erro);
+                this._mensagem.texto = erro;
+            });
     };
 
-    ordena(coluna){
-       if(this._ordemAtual == coluna) {
+    ordena(coluna) {
+        if (this._ordemAtual == coluna) {
             // inverte a ordem da lista!
             this._listaNegociacoes.inverteOrdem();
         } else {
@@ -33,17 +44,17 @@ class NegociacaoController {
         this._ordemAtual = coluna;
     }
 
-    importaNegociacoes(){
+    importaNegociacoes() {
 
         let serviceNegociacao = new NegociacaoService();
         serviceNegociacao
-         .obterNegociacoes()
-         .then(negociacoes => { 
-           negociacoes
-                .forEach(itemResultadoArray => this._listaNegociacoes.adiciona(itemResultadoArray));
-            this._mensagem.texto = "Negociações obtidas com sucesso!"
-        })
-        .catch(error => this._mensagem.texto = error);
+            .obterNegociacoes()
+            .then(negociacoes => {
+                negociacoes
+                    .forEach(itemResultadoArray => this._listaNegociacoes.adiciona(itemResultadoArray));
+                this._mensagem.texto = "Negociações obtidas com sucesso!"
+            })
+            .catch(error => this._mensagem.texto = error);
     };
 
     adiciona(event) {
@@ -53,20 +64,36 @@ class NegociacaoController {
             .getConnection()
             .then(connection => {
                 new NegociacaoDao(connection)
-                .adiciona(this._criaNegociacao())
-                .then(() =>{
-                    this._listaNegociacoes.adiciona(this._criaNegociacao());
-                    this._mensagem.texto = 'Negociação adicionada com sucesso';
-                    this._limpaFormulario();
-                })
+                    .adiciona(this._criaNegociacao())
+                    .then(() => {
+                        this._listaNegociacoes.adiciona(this._criaNegociacao());
+                        this._mensagem.texto = 'Negociação adicionada com sucesso';
+                        this._limpaFormulario();
+                    })
             })
             .catch(erro => this._mensagem.texto = erro)
     };
 
     apaga() {
-        this._listaNegociacoes.esvazia();
 
-        this._mensagem.texto = 'Negociacao apagada com sucesso.'
+        try {
+            ConnectionFactory
+                .getConnection()
+                .then(connection => new NegociacaoDao(connection))
+                .then(dao => dao.apagaTodos())
+                .then(result => {
+                    this._mensagem.texto = result
+                    this._listaNegociacoes.esvazia();
+                })
+                .catch(error => {
+                    console.log(error)
+                    this._mensagem.texto = error
+                })
+
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
 
     _criaNegociacao() {
