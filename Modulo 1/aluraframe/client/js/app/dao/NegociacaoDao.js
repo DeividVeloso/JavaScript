@@ -25,4 +25,36 @@ class NegociacaoDao {
         })
        
     }
+
+    listaTodos() {
+        return new Promise((resolve,reject) => {
+            //Pega a conexão com o IndexDB e pede permissão de escrita e leitura nessa tabela
+            let transaction = this_connection.transaction(['negociacoes'], 'readwrite');
+            //Pega tabela(StoreObject) negociacoes
+            let store = transaction.objectStore('negociacoes');
+            //Abre o cursor na store 
+            let cursor = store.openCursor();
+
+            let negociacoes = [];
+
+            //percorre o cursor como se fosse um While
+            cursor.onsuccess = e => {
+                
+                //Guarda a linha atual da tabela
+                let atual = e.target.result;
+                //Se ainda tiver dados para serem lidos adiciona no array negociacoes
+                if(atual){
+                    let dado = atual.value;
+                    negociacoes.push(new Negociacao(dado._data, dado._quantidade, dado._valor));
+                    atual.continue();
+                }else{
+                    resolve(negociacoes);
+                }
+            }
+
+            cursor.onerror = e =>{
+                reject(e);
+            }
+        });
+    }
 }
