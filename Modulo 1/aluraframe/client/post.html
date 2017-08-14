@@ -11,8 +11,8 @@
 
         <div class="form-group">
             <label for="data">Data</label>
-            <input type="date" id="data" class="form-control" required autofocus/>        
-        </div>    
+            <input type="date" id="data" class="form-control" required autofocus/>
+        </div>
 
         <div class="form-group">
             <label for="quantidade">Quantidade</label>
@@ -31,16 +31,16 @@
 
         function sendPost(event) {
             event.preventDefault();
-            
+
             let $ = document.querySelector.bind(document);
             let data = $('#data').value;
             let quantidade = $('#quantidade').value;
             let valor = $('#valor').value;
 
             let dados = {data : data, quantidade : quantidade, valor: valor}
-              
-                        
-            // usando nosso serviço. Veja que nem guardei em uma variável 
+
+
+            // usando nosso serviço. Veja que nem guardei em uma variável
             new HttpService()
                 .post('/negociacoes', dados)
                 .then(() => {
@@ -48,13 +48,13 @@
                     data.value = '';
                     quantidade.value = 1;
                     valor.value = 0.0;
-                    data.focus();
+                
                     console.log('Negociação enviada com sucesso');
                 })
                 .catch(erro => {
                     console.log(`Não foi possível enviar a negociação: ${erro}`)
                 });
-      
+
           }
     </script>
 </body>
