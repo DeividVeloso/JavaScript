@@ -19,3 +19,4 @@ function Bind(model, view, props) {
     //estou retornando meu FactoryProxy
     return proxy;
 };
+//# sourceMappingURL=Bind.js.map
