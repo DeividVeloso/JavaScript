@@ -1,47 +1,59 @@
+"use strict";
 
-var ConnectionFactory = (function (){
-    var dbName = "aluraframe";
-    var dbVersion = 1;
-    var stores = ["negociacoes"];
-    
-    var connection = null;
-    var close = null;
-    return class ConnectionFactory {
-      //para evitar que o programador tente instanciar esssa classe, pois ela é static
-      constructor() {
-        throw new Error("Não é possível criar instâncias de ConnectionFactory");
-      }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-      static getConnection() {
-        return new Promise((resolve, reject) => {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ConnectionFactory = function () {
+  var dbName = "aluraframe";
+  var dbVersion = 1;
+  var stores = ["negociacoes"];
+
+  var connection = null;
+  var close = null;
+  return function () {
+    //para evitar que o programador tente instanciar esssa classe, pois ela é static
+    function ConnectionFactory() {
+      _classCallCheck(this, ConnectionFactory);
+
+      throw new Error("Não é possível criar instâncias de ConnectionFactory");
+    }
+
+    _createClass(ConnectionFactory, null, [{
+      key: "getConnection",
+      value: function getConnection() {
+        var _this = this;
+
+        return new Promise(function (resolve, reject) {
           //Cria o banco de dados
-          let openRequest = window.indexedDB.open(dbName, dbVersion);
+          var openRequest = window.indexedDB.open(dbName, dbVersion);
 
-          openRequest.onupgradeneeded = e => {
-            this._createObjectStore(e.target.result);
+          openRequest.onupgradeneeded = function (e) {
+            _this._createObjectStore(e.target.result);
           };
 
-          openRequest.onsuccess = e => {
-            if(!connection) {
+          openRequest.onsuccess = function (e) {
+            if (!connection) {
               connection = e.target.result;
               close = connection.close.bind(connection);
-              connection.close = function(){
-                  throw new Error('Você não pode fechar diretamente a conexão')
-              }
+              connection.close = function () {
+                throw new Error('Você não pode fechar diretamente a conexão');
+              };
             }
-              resolve(connection)
+            resolve(connection);
           };
 
-          openRequest.onerror = e => {
-              reject(e.target.error.name)
+          openRequest.onerror = function (e) {
+            reject(e.target.error.name);
           };
         });
       }
-
-      static _createObjectStore(connection) {
+    }, {
+      key: "_createObjectStore",
+      value: function _createObjectStore(connection) {
         //Verifica se já existe as stores que estou passando no array STORES para criar no banco
         //Caso exista então apagar as existentes, senão criar as novas stores
-        stores.forEach(store => {
+        stores.forEach(function (store) {
           if (connection.objectStoreNames.contains(store)) {
             connection.deleteObjectStore(store);
           } else {
@@ -51,11 +63,17 @@ var ConnectionFactory = (function (){
       }
 
       //Método para fechar a conexão
-      static closeConnection(){
-        if(connection){
+
+    }, {
+      key: "closeConnection",
+      value: function closeConnection() {
+        if (connection) {
           close();
           connection = null;
         }
       }
-    }
-})()
+    }]);
+
+    return ConnectionFactory;
+  }();
+}();
